@@ -1,6 +1,6 @@
 {
   "name": "websocket-rpc-client",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "websocket JSON-RPC 2.0 client ",
   "main": "index.js",
   "scripts": {
