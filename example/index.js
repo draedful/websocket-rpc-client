@@ -3,7 +3,7 @@ import WS from '../src/ws/ws.js';
 WS.subscribe('onConnect', function(params){
     console.log('onConnect', params);
 });
-var url = "wss://server.com";
+var url = 'wss://dev.hivecompany.ru/websocket';
 WS.start({url: url})
     .then(function(e) {
         console.log('Success connected', e);

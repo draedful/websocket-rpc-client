@@ -22,8 +22,9 @@ export default {
             packet.sourceIn = resp.sourceIn;
             if (resp.error) {
                 packet.reject(resp.error);
+            } else {
+                packet.resolve(resp.result);
             }
-            packet.resolve(resp);
             this.pool.delete(resp.id);
         }
     }
