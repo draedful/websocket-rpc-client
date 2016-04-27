@@ -152,7 +152,7 @@ export default {
     },
 
     unsubscribe(name, cb) {
-
+        return WSEvents.unsubscribe(name, cb);
     }
 
 

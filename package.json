@@ -4,8 +4,7 @@
   "description": "websocket JSON-RPC 2.0 client ",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": ""
+    "build": "node_modules/.bin/webpack --config webpack.config.js "
   },
   "keywords": [
     "websocket",
@@ -17,6 +16,10 @@
   "author": {
     "name": "Andrey Shchetinin",
     "email": "schetinin1993@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/draedful/websocket-rpc-client"
   },
   "license": "MIT",
   "dependencies": {

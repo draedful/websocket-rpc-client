@@ -4,7 +4,6 @@ module.exports = {
     entry: './src/index.js',
     include: [path.resolve(__dirname, './src')],
     output: {
-        /*path: path.resolve(__dirname, './build'),*/
         filename:'index.js',
         libraryTarget: 'umd',
         library: 'websocket-rpc-client',
