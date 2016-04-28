@@ -1,1 +1,3 @@
-module.exports = require('./ws/ws.js');
+import WS from './ws/ws.js';
+
+export default WS
