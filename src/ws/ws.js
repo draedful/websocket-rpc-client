@@ -14,13 +14,15 @@ var WSStatus = {
     CLOSED: 3
 };
 
-
+window.WSPool = WSPool;
 export default {
     ws: null,
     reconnectCount: 0,
     config: {
         reconnectTimeout: 2000,
-        reconnectCount: 2
+        reconnectCount: 2,
+        poolSize: 100,
+        poolTimeout: 1000 // life time packet
     },
     start(config) {
         if (config && config.url && !this.isOnline()) {
@@ -42,6 +44,7 @@ export default {
             this.reconnectTimeoutHandler = null;
             this.reconnectCount = 0;
             this.ws.onmessage = this.onMessage.bind(this);
+            WSPool.init(100);
             resolve(e);
         };
 
@@ -81,67 +84,44 @@ export default {
     },
 
     onMessage(data) {
-        /**
-         * При получении сообщения нам нужно распарсить сообщение
-         * */
-        var response = null;
         if (data.data instanceof ArrayBuffer) {
             this.ws.isBinary = true;
-            try {
-                var sourceIn = pako.inflate(new Uint8Array(data.data), {to: 'string'});
-                response = JSON.parse(sourceIn);
-                response.sourceIn = sourceIn;
-            } catch (e) {
-                response = {
+            //try {
+                this.resolve(JSON.parse(pako.inflate(new Uint8Array(data.data), {to: 'string'})))
+            /*} catch (e) {
+                this.resolve({
                     error: e
-                }
-            }
+                })
+            }*/
         } else {
-            response = JSON.parse(data.data);
-            response.sourceIn = data.data;
+            this.resolve(JSON.parse(data.data));
         }
+    },
 
-        /**
-         * Если сообщение не имеет идентификатора -
-         * значит сообщение пришло не в результате запроса, т.к БЕ всегда возвращает идентификатор запроса
-         * значит это событие.
-         *
-         * */
-
+    resolve(response) {
         if (!isUndefined(response.id)) {
             WSPool.resolvePacket(response);
         } else {
             WSEvents.resolveEvent(response);
         }
-
     },
 
     send(method, params) {
         return new Promise((resolve, reject) => {
             var packet = WSPool.createPacket();
-            packet.setMessage(method, params);
+            packet.create(method, params, resolve, reject);
 
             if (this.isOnline() && isString(method) && isObject(params)) {
-                // Добавляем пакет в пулл
-
-                // устанавливаем методы для резолва собятия
-
-                packet
-                    .setResolve(resolve)
-                    .setReject(reject);
-
-                // отправляем сообщение
-                this.ws.send(packet);
 
                 var data = JSON.stringify(packet.getMessage());
+                packet.sourceOut = data;
                 if (this.isBinary) {
                     data = pako.deflate(data, {gzip: true}).buffer;
                 }
                 this.ws.send(data);
 
             } else {
-                packet.setError('WS недостпупен');
-                reject(packet);
+                packet.reject('WS недостпупен');
             }
 
         });

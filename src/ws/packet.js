@@ -21,82 +21,48 @@ export default (function(){
          * */
         constructor(id) {
             this.id = id;
-            this.config = {}
+            this.message = {}
         }
 
-        setConfig(config) {
-            this.config = config || {};
-        }
-
-        getConfig() {
-            return this.config;
-        }
-
-        setMessage(method, params) {
-            var config = this.getConfig();
-            config.id = this.id;
-            config.method = method;
-            config.params = params;
-            this.sourceOut = JSON.stringify(config);
-            return this;
+        create(method, params, resolve, reject) {
+            this.message.id = this.id;
+            this.message.method = method;
+            this.message.params = params;
+            this.rejectCb = reject;
+            this.resolveCb = resolve;
         }
 
         getMessage() {
-            return this.getConfig();
-        }
-
-        /**
-         *
-         * */
-        setResolve(resolve) {
-            this.resolveDefer = resolve;
-            return this;
-        }
-
-        setReject(reject) {
-            this.rejectDefer = reject;
+            return this.message;
         }
 
         resolve(data) {
-            if(isFunction(this.resolveDefer)) {
-                this.data = data;
-                this.resolveDefer(this);
-                delete this.rejectDefer;
-                delete this.resolveDefer;
+            if(isFunction(this.resolveCb)) {
+                this.resolveCb({
+                    data: data
+                });
             }
             return this;
         }
 
         reject(error) {
-            this.error = error;
-            if(isFunction(this.rejectDefer )) {
-                this.rejectDefer(this);
+            if(isFunction(this.rejectCb )) {
+                this.rejectCb({
+                    error: error
+                });
             }
-            delete this.rejectDefer;
-            delete this.resolveDefer;
             return this;
         }
 
-        setData(data) {
-            this.data = data;
-            return this;
-        }
-
-        getData() {
-            return this.data;
-        }
-
-        isError() {
-            return !!this.error;
-        }
-
-        getError() {
-            return this.error;
-        }
-
-        setError(error) {
-            this.error = error;
-            return this;
+        clear() {
+            /*delete this.id;
+            this.message = {};
+            delete this.data;
+            delete this.rejectCb;
+            delete this.resolveCb;
+            delete this.sourceOut;
+            delete this.sourceIn;
+            delete this.error;*/
         }
     }
 
