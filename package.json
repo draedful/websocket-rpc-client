@@ -1,11 +1,10 @@
 {
   "name": "websocket-rpc-client",
-  "version": "0.1.6",
+  "version": "0.1.9",
   "description": "websocket JSON-RPC 2.0 client ",
   "main": "index.js",
   "scripts": {
-    "build": "node_modules/.bin/webpack --config webpack.config.js ",
-    "prepublish": "npm run build"
+
   },
   "keywords": [
     "websocket",
