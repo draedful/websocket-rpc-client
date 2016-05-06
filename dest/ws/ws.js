@@ -45,7 +45,6 @@ var WSStatus = {
     CLOSED: 3
 };
 
-window.WSPool = _pool2.default;
 exports.default = {
     ws: null,
     reconnectCount: 0,
