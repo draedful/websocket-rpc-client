@@ -121,7 +121,7 @@ export default {
                 this.ws.send(data);
 
             } else {
-                packet.reject('WS недостпупен');
+                packet.reject('Failed connection');
             }
 
         });
