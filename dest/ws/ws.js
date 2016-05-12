@@ -147,7 +147,7 @@ exports.default = {
                 }
                 _this3.ws.send(data);
             } else {
-                packet.reject('WS недостпупен');
+                packet.reject('Failed connection');
             }
         });
     },
