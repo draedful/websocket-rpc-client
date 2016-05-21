@@ -1,6 +1,5 @@
 import WSPool from './pool';
 import WSEvents from './events';
-import WSPacket from './packet';
 import isString from 'lodash/isString';
 import isUndefined from 'lodash/isUndefined';
 import isObject from 'lodash/isObject';
@@ -44,7 +43,7 @@ export default {
             this.reconnectTimeoutHandler = null;
             this.reconnectCount = 0;
             this.ws.onmessage = this.onMessage.bind(this);
-            WSPool.init(100);
+            WSPool.init(this.config.poolSize);
             resolve(e);
         };
 
@@ -84,17 +83,17 @@ export default {
     },
 
     onMessage(data) {
-        if (data.data instanceof ArrayBuffer) {
-            this.ws.isBinary = true;
-            //try {
-                this.resolve(JSON.parse(pako.inflate(new Uint8Array(data.data), {to: 'string'})))
-            /*} catch (e) {
-                this.resolve({
-                    error: e
-                })
-            }*/
-        } else {
-            this.resolve(JSON.parse(data.data));
+        try {
+            var msg = data.data;
+            if(data.data instanceof ArrayBuffer) {
+                this.ws.isBinary = true;
+                msg = pako.inflate(new Uint8Array(data.data), {to: 'string'});
+            }
+            this.resolve(JSON.parse(msg));
+        } catch (e) {
+            this.reject({
+                error: e
+            })
         }
     },
 

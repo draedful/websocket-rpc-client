@@ -17,6 +17,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var WSEvents = {
     pool: new Map(),
 
+    /**
+     * @param {string} name - channel name
+     * @param {function} cb - callback
+     *
+     * @return {WSEvents}
+     * */
     subscribe: function subscribe(name, cb) {
 
         var cbs = this.pool.get(name);
@@ -26,7 +32,16 @@ var WSEvents = {
         } else {
             cbs.push(cb);
         }
+        return this;
     },
+
+
+    /**
+     * @param {string} name - channel name
+     * @param {function} cb - callback
+     *
+     * @return {WSEvents}
+     * */
     unsubscribe: function unsubscribe(name, cb) {
         if (name) {
             var cbs = this.pool.get(name);
@@ -40,7 +55,15 @@ var WSEvents = {
                 this.pool.delete(name);
             }
         }
+        return this;
     },
+
+
+    /**
+     * @private
+     * @param {Object} resp - JSON-RPC event
+     * 
+     * */
     resolveEvent: function resolveEvent(resp) {
         var cbs = this.pool.get(resp.method);
         if (cbs) {

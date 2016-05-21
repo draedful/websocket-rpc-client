@@ -10,6 +10,10 @@ var _isFunction = require('lodash/isFunction');
 
 var _isFunction2 = _interopRequireDefault(_isFunction);
 
+var _defer = require('lodash/defer');
+
+var _defer2 = _interopRequireDefault(_defer);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -17,80 +21,77 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 /***
  * @namespace
  * @class
- * @classdesc Описывает пакет запроса. Определяет методы для резолва вызова, тип получаемых данных и описание ошибки
  *
- * @property {number} id - идентификатор сообщения
- * @property {object} data - данные полученные в результате запроса
- * @property {object|string} error - серверная ошибка
- * @property {function} reject - метод промиса
- * @propery {function} resolve - метод промиса
- * @propery {object} config - описание тела запроса
+ * @property {number} id - id message
+ * @property {object} data - request data
+ * @property {object|string} error - server error
+ * @property {function} reject - reject promise
+ * @propery {function} resolve - resolve promise
+ * @propery {object} config - describe body
  * */
 
-exports.default = function () {
-    var WSPacket = function () {
-        /**
-         * @constructor
-         * @param {number} id -  идентификатор сообщения
-         * */
+var WSPacket = function () {
+    /**
+     * @constructor
+     * @param {number} id -  идентификатор сообщения
+     * */
 
-        function WSPacket(id) {
-            _classCallCheck(this, WSPacket);
+    function WSPacket(id) {
+        _classCallCheck(this, WSPacket);
 
-            this.id = id;
-            this.message = {};
+        this.id = id;
+        this.message = {};
+    }
+
+    _createClass(WSPacket, [{
+        key: 'create',
+        value: function create(method, params, resolve, reject) {
+            this.message.id = this.id;
+            this.message.method = method;
+            this.message.params = params;
+            this.rejectCb = reject;
+            this.resolveCb = resolve;
         }
-
-        _createClass(WSPacket, [{
-            key: 'create',
-            value: function create(method, params, resolve, reject) {
-                this.message.id = this.id;
-                this.message.method = method;
-                this.message.params = params;
-                this.rejectCb = reject;
-                this.resolveCb = resolve;
+    }, {
+        key: 'getMessage',
+        value: function getMessage() {
+            return this.message;
+        }
+    }, {
+        key: 'resolve',
+        value: function resolve(data) {
+            if ((0, _isFunction2.default)(this.resolveCb)) {
+                (0, _defer2.default)(this.resolveCb, {
+                    data: data
+                });
             }
-        }, {
-            key: 'getMessage',
-            value: function getMessage() {
-                return this.message;
+            return this;
+        }
+    }, {
+        key: 'reject',
+        value: function reject(error) {
+            if ((0, _isFunction2.default)(this.rejectCb)) {
+                (0, _defer2.default)(this.rejectCb, {
+                    error: error
+                });
             }
-        }, {
-            key: 'resolve',
-            value: function resolve(data) {
-                if ((0, _isFunction2.default)(this.resolveCb)) {
-                    this.resolveCb({
-                        data: data
-                    });
-                }
-                return this;
-            }
-        }, {
-            key: 'reject',
-            value: function reject(error) {
-                if ((0, _isFunction2.default)(this.rejectCb)) {
-                    this.rejectCb({
-                        error: error
-                    });
-                }
-                return this;
-            }
-        }, {
-            key: 'clear',
-            value: function clear() {
-                /*delete this.id;
-                this.message = {};
-                delete this.data;
-                delete this.rejectCb;
-                delete this.resolveCb;
-                delete this.sourceOut;
-                delete this.sourceIn;
-                delete this.error;*/
-            }
-        }]);
-
-        return WSPacket;
-    }();
+            return this;
+        }
+    }, {
+        key: 'clear',
+        value: function clear() {
+            /*delete this.id;
+            this.message = {};
+            delete this.data;
+            delete this.rejectCb;
+            delete this.resolveCb;
+            delete this.sourceOut;
+            delete this.sourceIn;
+            delete this.error;*/
+        }
+    }]);
 
     return WSPacket;
 }();
+
+exports.default = WSPacket;

@@ -12,10 +12,6 @@ var _events = require('./events');
 
 var _events2 = _interopRequireDefault(_events);
 
-var _packet = require('./packet');
-
-var _packet2 = _interopRequireDefault(_packet);
-
 var _isString = require('lodash/isString');
 
 var _isString2 = _interopRequireDefault(_isString);
@@ -76,7 +72,7 @@ exports.default = {
             _this2.reconnectTimeoutHandler = null;
             _this2.reconnectCount = 0;
             _this2.ws.onmessage = _this2.onMessage.bind(_this2);
-            _pool2.default.init(100);
+            _pool2.default.init(_this2.config.poolSize);
             resolve(e);
         };
 
@@ -111,18 +107,18 @@ exports.default = {
         return false;
     },
     onMessage: function onMessage(data) {
-        if (data.data instanceof ArrayBuffer) {
-            this.ws.isBinary = true;
-            //try {
-            this.resolve(JSON.parse(_pako2.default.inflate(new Uint8Array(data.data), { to: 'string' })));
-            /*} catch (e) {
-                this.resolve({
-                    error: e
-                })
-            }*/
-        } else {
-                this.resolve(JSON.parse(data.data));
+        try {
+            var msg = data.data;
+            if (data.data instanceof ArrayBuffer) {
+                this.ws.isBinary = true;
+                msg = _pako2.default.inflate(new Uint8Array(data.data), { to: 'string' });
             }
+            this.resolve(JSON.parse(msg));
+        } catch (e) {
+            this.reject({
+                error: e
+            });
+        }
     },
     resolve: function resolve(response) {
         if (!(0, _isUndefined2.default)(response.id)) {
